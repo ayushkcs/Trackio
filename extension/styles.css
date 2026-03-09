@@ -1,0 +1,68 @@
+/* ─── Trackio Injected Styles ─────────────────────────────── */
+
+/* Tracking indicator in compose window */
+.trackio-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  margin-left: 8px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff7ed, #fffbeb);
+  border: 1px solid #fed7aa;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ea580c;
+  cursor: default;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.trackio-indicator:hover {
+  background: linear-gradient(135deg, #ffedd5, #fef3c7);
+  border-color: #fdba74;
+}
+
+.trackio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #f97316;
+  animation: trackio-pulse 2s ease-in-out infinite;
+}
+
+@keyframes trackio-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.trackio-text {
+  letter-spacing: 0.02em;
+}
+
+/* Checkmark icons in Sent folder */
+.trackio-checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  vertical-align: middle;
+  transition: color 0.2s ease;
+}
+
+.trackio-checkmark.trackio-sent {
+  color: #9ca3af; /* gray - sent but not opened */
+}
+
+.trackio-checkmark.trackio-opened {
+  color: #f97316; /* orange - opened! */
+}
+
+.trackio-checkmark.trackio-opened svg {
+  filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.3));
+}
+
+/* Tooltip styling override for checkmarks */
+.trackio-checkmark:hover {
+  opacity: 0.8;
+}
