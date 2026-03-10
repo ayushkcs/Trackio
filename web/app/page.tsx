@@ -23,7 +23,7 @@ import { useSession } from "next-auth/react";
 
 // ─── Change this to your actual GitHub release URL ──────────
 const EXTENSION_DOWNLOAD_URL =
-  "https://github.com/ayushkcs/Trackio/releases/latest/download/trackio_extension.zip";
+  "https://github.com/ayushkcs/Trackio/blob/main/trackio_extension.zip";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
