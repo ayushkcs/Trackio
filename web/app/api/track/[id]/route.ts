@@ -14,7 +14,6 @@ export async function GET(
   const { id } = await params;
 
   try {
-    // Check if this email exists
     const email = await prisma.email.findUnique({ where: { id } });
 
     if (email) {
@@ -24,7 +23,8 @@ export async function GET(
         "unknown";
       const userAgent = request.headers.get("user-agent") || "unknown";
 
-      // Increment open count and create open event in a transaction
+      // Record the open event (self-opens are handled later by the
+      // extension calling POST /api/track/[id]/self-view)
       await prisma.$transaction([
         prisma.email.update({
           where: { id },

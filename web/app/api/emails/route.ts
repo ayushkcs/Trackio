@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { corsPreflightResponse, withCors } from "@/lib/cors";
@@ -32,11 +33,15 @@ export async function POST(request: NextRequest) {
       userId = user.id;
     }
 
+    // Generate a unique token the extension can use to report self-views
+    const senderToken = randomUUID();
+
     const email = await prisma.email.create({
       data: {
         recipient,
         subject,
         senderEmail,
+        senderToken,
         userId,
       },
     });
@@ -44,6 +49,7 @@ export async function POST(request: NextRequest) {
     return withCors(
       NextResponse.json({
         id: email.id,
+        senderToken,
         trackingUrl: `${
           process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
         }/api/track/${email.id}`,

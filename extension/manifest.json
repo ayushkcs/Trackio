@@ -7,10 +7,13 @@
     "storage",
     "activeTab",
     "notifications",
-    "alarms"
+    "alarms",
+    "declarativeNetRequest"
   ],
   "host_permissions": [
-    "https://mail.google.com/*"
+    "https://mail.google.com/*",
+    "http://localhost:3000/*",
+    "https://*.ayushk.blog/*"
   ],
   "content_scripts": [
     {
@@ -37,5 +40,4 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   }
-  
 }

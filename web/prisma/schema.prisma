@@ -64,6 +64,7 @@ model Email {
   status      String      @default("sent")
   openCount   Int         @default(0)
   senderEmail String
+  senderToken String?     // Token used by extension to authenticate self-view reports
   userId      String?
   user        User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime    @default(now())
@@ -75,12 +76,13 @@ model Email {
 }
 
 model OpenEvent {
-  id        String   @id @default(cuid())
-  emailId   String
-  email     Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
-  timestamp DateTime @default(now())
-  ipAddress String?
-  userAgent String?
+  id         String   @id @default(cuid())
+  emailId    String
+  email      Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  timestamp  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+  isSelfOpen Boolean  @default(false) // Marked true by extension self-view reports
 
   @@index([emailId])
 }

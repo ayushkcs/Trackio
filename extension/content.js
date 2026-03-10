@@ -3,7 +3,9 @@
 // 1. Detect compose windows and intercept Send clicks
 // 2. Inject tracking pixels into email bodies
 // 3. Show checkmark icons in Sent folder for opened emails
-// 4. Prevent self-opens from being counted
+// 4. Detect self-views and report them to the server
+//    (compose-time blocked by declarativeNetRequest in background.js;
+//     sent-folder / thread views handled here)
 
 (function () {
   "use strict";
@@ -15,16 +17,22 @@
   const PROCESSED_ATTR = "data-trackio-processed";
   const CHECKMARK_ATTR = "data-trackio-checkmark";
 
+  // Debounce: don't re-report the same email within this window
+  const SELF_VIEW_DEBOUNCE_MS = 60_000; // 1 minute
+
   // ─── State ─────────────────────────────────────────────────
   let settings = { apiBase: "http://localhost:3000", enabled: true };
   let senderEmail = null;
   let isInSentFolder = false;
 
+  // Tracks when we last reported a self-view for each email ID
+  // to avoid flooding the server with duplicate reports
+  const selfViewTimestamps = {};
+
   // ─── Initialize ────────────────────────────────────────────
   async function init() {
     log("Initializing...");
 
-    // Load settings from background
     try {
       settings = await sendMessage({ type: "GET_SETTINGS" });
     } catch (e) {
@@ -36,21 +44,13 @@
       return;
     }
 
-    // Wait for Gmail to fully load
     await waitForGmail();
 
-    // Extract sender email
     senderEmail = extractSenderEmail();
     log("Sender email:", senderEmail);
 
-    // Start observing for compose windows
     observeComposeWindows();
-
-    // Start observing for Sent folder (checkmark feature)
     observeSentFolder();
-
-    // Self-open prevention: Block tracking pixels in Sent folder view
-    setupSelfOpenPrevention();
 
     log("Initialized successfully!");
   }
@@ -59,7 +59,6 @@
   function waitForGmail() {
     return new Promise((resolve) => {
       const check = () => {
-        // Gmail is loaded when the main content area exists
         if (
           document.querySelector('div[role="main"]') ||
           document.querySelector(".nH") ||
@@ -76,7 +75,6 @@
 
   // ─── Extract Sender Email ──────────────────────────────────
   function extractSenderEmail() {
-    // Method 1: From the account switcher / profile area
     const accountBtn = document.querySelector(
       'a[aria-label*="Google Account"]'
     );
@@ -88,29 +86,24 @@
       if (match) return match[1];
     }
 
-    // Method 2: From the Gmail data attribute
     const emailAttr = document.querySelector("[data-email]");
     if (emailAttr) return emailAttr.getAttribute("data-email");
 
-    // Method 3: From page title or URL
     const titleMatch = document.title.match(
       /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/
     );
     if (titleMatch) return titleMatch[1];
 
-    // Method 4: From the "From" dropdown in compose (extracted later)
     return null;
   }
 
   // ─── Observe Compose Windows ───────────────────────────────
   function observeComposeWindows() {
-    // Use MutationObserver to detect new compose windows
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType !== Node.ELEMENT_NODE) continue;
 
-          // Gmail compose windows have class 'M9' or contain compose elements
           const composeWindows = [];
 
           if (node.classList && node.classList.contains("M9")) {
@@ -121,7 +114,6 @@
             composeWindows.push(...node.querySelectorAll(".M9"));
           }
 
-          // Also check for inline compose (reply)
           const inlineCompose = node.querySelectorAll
             ? node.querySelectorAll(".ip.iq")
             : [];
@@ -139,9 +131,7 @@
       subtree: true,
     });
 
-    // Also check for already-open compose windows
     document.querySelectorAll(".M9, .ip.iq").forEach(processComposeWindow);
-
     log("Compose window observer started");
   }
 
@@ -151,21 +141,16 @@
     composeEl.setAttribute(PROCESSED_ATTR, "true");
 
     log("New compose window detected");
-
-    // Add a visual indicator that Trackio is active
     addTrackingIndicator(composeEl);
-
-    // Find and intercept the Send button
     interceptSendButton(composeEl);
   }
 
   // ─── Add Tracking Indicator ────────────────────────────────
   function addTrackingIndicator(composeEl) {
-    // Find the toolbar/action area of the compose window
-    const toolbar = composeEl.querySelector(".btC") || composeEl.querySelector(".IZ");
+    const toolbar =
+      composeEl.querySelector(".btC") || composeEl.querySelector(".IZ");
     if (!toolbar) return;
 
-    // Check if indicator already exists
     if (toolbar.querySelector(".trackio-indicator")) return;
 
     const indicator = document.createElement("div");
@@ -180,9 +165,7 @@
 
   // ─── Intercept Send Button ─────────────────────────────────
   function interceptSendButton(composeEl) {
-    // Gmail Send button selectors (may vary)
     const findSendButton = () => {
-      // Primary send button
       return (
         composeEl.querySelector('[data-tooltip*="Send"]') ||
         composeEl.querySelector('[aria-label*="Send"]') ||
@@ -194,7 +177,6 @@
     let sendButton = findSendButton();
 
     if (!sendButton) {
-      // Retry a few times if button isn't ready
       let retries = 0;
       const retryInterval = setInterval(() => {
         sendButton = findSendButton();
@@ -221,22 +203,18 @@
 
     log("Send button intercepted");
 
-    // Capture the click event before Gmail processes it
     sendButton.addEventListener(
       "click",
       async function (e) {
-        // Only intercept once per send
         if (composeEl.getAttribute("data-trackio-sending")) return;
         composeEl.setAttribute("data-trackio-sending", "true");
 
-        // Prevent the default send temporarily
         e.stopImmediatePropagation();
         e.preventDefault();
 
         log("Send intercepted, injecting tracking pixel...");
 
         try {
-          // Extract email details
           const recipient = extractRecipient(composeEl);
           const subject = extractSubject(composeEl);
 
@@ -246,10 +224,9 @@
             return;
           }
 
-          // Get sender email if not already extracted
-          const sender = senderEmail || extractSenderFromCompose(composeEl);
+          const sender =
+            senderEmail || extractSenderFromCompose(composeEl);
 
-          // Register the email with the API
           const result = await sendMessage({
             type: "REGISTER_EMAIL",
             data: {
@@ -260,8 +237,10 @@
           });
 
           if (result && result.success && result.id) {
-            // Inject the tracking pixel
-            injectTrackingPixel(composeEl, result.trackingUrl || result.id);
+            injectTrackingPixel(
+              composeEl,
+              result.trackingUrl || result.id
+            );
             log("Tracking pixel injected for:", recipient);
           } else {
             log("Failed to register email:", result?.error);
@@ -270,25 +249,22 @@
           log("Error during send interception:", error);
         }
 
-        // Small delay to ensure pixel is in DOM, then trigger original send
         setTimeout(() => {
           triggerOriginalSend(composeEl);
         }, 100);
       },
-      true // Use capture phase to run before Gmail's handler
+      true
     );
   }
 
   // ─── Extract Email Details ─────────────────────────────────
   function extractRecipient(composeEl) {
-    // Try to get recipient from the "To" field
     const toField =
       composeEl.querySelector('input[name="to"]') ||
       composeEl.querySelector('[aria-label="To recipients"]') ||
       composeEl.querySelector(".agP.aFw");
 
     if (toField) {
-      // Check for email chips (pills)
       const chips = composeEl.querySelectorAll(
         '[data-hovercard-id], .vR .vN, [email]'
       );
@@ -304,10 +280,9 @@
       return toField.value || toField.textContent?.trim();
     }
 
-    // For reply compose, try to get from the thread
     const replyHeader = composeEl
       .closest(".h7")
-      ?.querySelector('[email]');
+      ?.querySelector("[email]");
     if (replyHeader) {
       return replyHeader.getAttribute("email");
     }
@@ -324,7 +299,6 @@
       return subjectInput.value;
     }
 
-    // For reply, get subject from thread
     const threadSubject = document.querySelector(
       'h2[data-thread-perm-id], .hP'
     );
@@ -336,16 +310,13 @@
   }
 
   function extractSenderFromCompose(composeEl) {
-    // Check the "From" dropdown in compose
     const fromField = composeEl.querySelector('[name="from"]');
     if (fromField) return fromField.value;
-
     return senderEmail;
   }
 
   // ─── Inject Tracking Pixel ─────────────────────────────────
   function injectTrackingPixel(composeEl, trackingUrl) {
-    // Find the email body (contenteditable div)
     const emailBody = composeEl.querySelector(
       '[contenteditable="true"][role="textbox"], .Am.Al.editable, [g_editable="true"]'
     );
@@ -355,12 +326,15 @@
       return;
     }
 
-    // Build the full tracking URL if only ID was provided
     const fullUrl = trackingUrl.startsWith("http")
       ? trackingUrl
       : `${settings.apiBase}/api/track/${trackingUrl}`;
 
-    // Create the tracking pixel image
+    // NOTE: The browser will try to fetch this image immediately, but
+    // the declarativeNetRequest rule in background.js BLOCKS image
+    // requests to our /api/track/ from mail.google.com.
+    // So no self-open is recorded.  The <img src="…"> HTML remains
+    // in the compose body and Gmail includes it in the sent email.
     const pixel = document.createElement("img");
     pixel.src = fullUrl;
     pixel.width = 1;
@@ -370,13 +344,11 @@
     pixel.alt = "";
     pixel.setAttribute("data-trackio-pixel", "true");
 
-    // Append to the end of the email body
     emailBody.appendChild(pixel);
   }
 
   // ─── Trigger Original Send ─────────────────────────────────
   function triggerOriginalSend(composeEl) {
-    // Use keyboard shortcut to send (Ctrl+Enter or Cmd+Enter)
     const emailBody = composeEl.querySelector(
       '[contenteditable="true"][role="textbox"], .Am.Al.editable, [g_editable="true"]'
     );
@@ -394,14 +366,12 @@
       });
       emailBody.dispatchEvent(event);
     } else {
-      // Fallback: Try clicking the send button directly
       const sendBtn =
         composeEl.querySelector('[data-tooltip*="Send"]') ||
         composeEl.querySelector('[aria-label*="Send"]') ||
         composeEl.querySelector(".T-I.J-J5-Ji.aoO");
 
       if (sendBtn) {
-        // Remove our interceptor temporarily
         composeEl.removeAttribute("data-trackio-sending");
         composeEl.removeAttribute(PROCESSED_ATTR);
         sendBtn.removeAttribute("data-trackio-intercepted");
@@ -410,9 +380,9 @@
     }
   }
 
-  // ─── Sent Folder: Checkmark Feature ────────────────────────
+  // ─── Sent Folder: Checkmark + Self-View Detection ──────────
   function observeSentFolder() {
-    // Periodically check if we're in the Sent folder and add checkmarks
+    // Periodically check for Sent folder and report self-views
     setInterval(() => {
       checkSentFolder();
     }, SENT_FOLDER_CHECK_INTERVAL);
@@ -426,6 +396,9 @@
       }
     });
     urlObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Also detect when viewing a single thread the user authored
+    setInterval(checkViewingOwnThread, SENT_FOLDER_CHECK_INTERVAL);
   }
 
   function checkSentFolder() {
@@ -442,13 +415,12 @@
 
     // Find email rows in the list
     const emailRows = document.querySelectorAll(
-      'tr.zA:not([' + CHECKMARK_ATTR + "])"
+      "tr.zA:not([" + CHECKMARK_ATTR + "])"
     );
 
     emailRows.forEach(async (row) => {
       row.setAttribute(CHECKMARK_ATTR, "checking");
 
-      // Get email subject from the row
       const subjectEl = row.querySelector(".bog .bqe, .y2");
       const subject = subjectEl?.textContent?.trim();
 
@@ -457,14 +429,18 @@
         return;
       }
 
-      // Check local storage for tracking data
       const trackingData = await getLocalTrackingData();
-      const trackedEmail = Object.values(trackingData).find(
-        (e) => e.subject === subject
-      );
+      const matchEntry = findTrackedEmailBySubject(trackingData, subject);
 
-      if (trackedEmail) {
-        // Add checkmark indicator
+      if (matchEntry) {
+        const [emailId, trackedEmail] = matchEntry;
+
+        // ── Self-view reporting ──────────────────────────
+        // This row is a tracked email we sent — report the
+        // self-view so the server can compensate the pixel hit
+        // that Gmail's proxy made when rendering this row.
+        reportSelfViewIfNeeded(emailId, trackedEmail);
+
         addCheckmarkToRow(row, trackedEmail.opened);
         row.setAttribute(CHECKMARK_ATTR, "done");
       } else {
@@ -473,12 +449,69 @@
     });
   }
 
+  /**
+   * Detect when the user is viewing a full email thread they authored.
+   * Gmail renders the thread inline; if it's the user's own email,
+   * the proxy may have refetched the pixel.
+   */
+  function checkViewingOwnThread() {
+    if (isInSentFolder) return; // already handled by checkSentFolder
+
+    // Check if we're inside a thread view that the user sent
+    if (!isViewingOwnEmail()) return;
+
+    // Get the thread subject
+    const subjectEl = document.querySelector(
+      "h2[data-thread-perm-id], .hP"
+    );
+    const subject = subjectEl?.textContent?.trim();
+    if (!subject) return;
+
+    // Look up in local tracking data
+    getLocalTrackingData().then((trackingData) => {
+      const matchEntry = findTrackedEmailBySubject(trackingData, subject);
+      if (matchEntry) {
+        const [emailId, trackedEmail] = matchEntry;
+        reportSelfViewIfNeeded(emailId, trackedEmail);
+      }
+    });
+  }
+
+  // ─── Self-View Reporting ───────────────────────────────────
+
+  /**
+   * Report a self-view to the server if we haven't recently done so
+   * for this email.  Uses a per-email debounce to avoid flooding.
+   */
+  function reportSelfViewIfNeeded(emailId, trackedEmail) {
+    // Skip if no senderToken (old emails before this feature)
+    if (!trackedEmail.senderToken) return;
+
+    // Skip if already reported and debounce window hasn't passed
+    const lastReported = selfViewTimestamps[emailId] || 0;
+    if (Date.now() - lastReported < SELF_VIEW_DEBOUNCE_MS) return;
+
+    selfViewTimestamps[emailId] = Date.now();
+
+    log("Reporting self-view for:", emailId);
+
+    sendMessage({
+      type: "REPORT_SELF_VIEW",
+      data: {
+        emailId,
+        senderToken: trackedEmail.senderToken,
+      },
+    }).catch((err) => {
+      log("Self-view report failed:", err);
+    });
+  }
+
+  // ─── Checkmark UI ──────────────────────────────────────────
+
   function addCheckmarkToRow(row, isOpened) {
-    // Find a good place to add the checkmark
     const dateCell = row.querySelector(".xW.xY, .bq4");
     if (!dateCell) return;
 
-    // Check if checkmark already exists
     if (dateCell.querySelector(".trackio-checkmark")) return;
 
     const checkmark = document.createElement("span");
@@ -495,54 +528,9 @@
     dateCell.prepend(checkmark);
   }
 
-  // ─── Self-Open Prevention ──────────────────────────────────
-  function setupSelfOpenPrevention() {
-    // Block tracking pixel images from loading when viewing own sent emails
-    // This prevents the sender's own views from being counted
-
-    const observer = new MutationObserver((mutations) => {
-      if (!isInSentFolder && !isViewingOwnEmail()) return;
-
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.nodeType !== Node.ELEMENT_NODE) continue;
-
-          // Find and block tracking pixel images
-          const images = node.querySelectorAll
-            ? [
-                ...node.querySelectorAll('img[data-trackio-pixel]'),
-                ...node.querySelectorAll(
-                  `img[src*="${settings.apiBase}/api/track/"]`
-                ),
-              ]
-            : [];
-
-          if (
-            node.tagName === "IMG" &&
-            (node.getAttribute("data-trackio-pixel") ||
-              node.src?.includes(`${settings.apiBase}/api/track/`))
-          ) {
-            images.push(node);
-          }
-
-          images.forEach((img) => {
-            // Remove the src to prevent loading
-            img.removeAttribute("src");
-            img.style.display = "none";
-            log("Blocked self-open tracking pixel");
-          });
-        }
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-  }
+  // ─── Helpers ───────────────────────────────────────────────
 
   function isViewingOwnEmail() {
-    // Check if we're viewing a thread that we sent
     const fromLabels = document.querySelectorAll(".gD[email]");
     for (const label of fromLabels) {
       if (label.getAttribute("email") === senderEmail) {
@@ -552,7 +540,20 @@
     return false;
   }
 
-  // ─── Helpers ───────────────────────────────────────────────
+  /**
+   * Find a tracked email entry whose subject matches (case-insensitive).
+   * Returns [emailId, trackedEmail] or null.
+   */
+  function findTrackedEmailBySubject(trackingData, subject) {
+    const normalised = subject.toLowerCase();
+    for (const [id, entry] of Object.entries(trackingData)) {
+      if (entry.subject && entry.subject.toLowerCase() === normalised) {
+        return [id, entry];
+      }
+    }
+    return null;
+  }
+
   function log(...args) {
     console.log(TRACKIO_PREFIX, ...args);
   }
@@ -586,11 +587,9 @@
   }
 
   // ─── Start ─────────────────────────────────────────────────
-  // Wait for the page to be ready, then initialize
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
-    // Small delay to ensure Gmail has started its initialization
     setTimeout(init, 1500);
   }
 })();

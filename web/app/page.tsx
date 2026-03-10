@@ -14,9 +14,16 @@ import {
   MousePointerClick,
   Send,
   Sparkles,
+  LayoutDashboard,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+
+// ─── Change this to your actual GitHub release URL ──────────
+const EXTENSION_DOWNLOAD_URL =
+  "https://github.com/ayushkcs/Trackio/releases/latest/download/trackio_extension.zip";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -33,6 +40,9 @@ const staggerContainer = {
 };
 
 export default function LandingPage() {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated" && !!session?.user;
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
@@ -68,20 +78,31 @@ export default function LandingPage() {
               </a>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/login">
-                <Button
-                  variant="ghost"
-                  className="text-gray-700 hover:text-orange-600 hover:bg-orange-50"
-                >
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Button>
-              </Link>
+              {isLoggedIn ? (
+                <Link href="/dashboard">
+                  <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0">
+                    <LayoutDashboard className="w-4 h-4 mr-1.5" />
+                    Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button
+                      variant="ghost"
+                      className="text-gray-700 hover:text-orange-600 hover:bg-orange-50"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0">
+                      Get Started
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -137,13 +158,17 @@ export default function LandingPage() {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <a href="#download">
+              <a
+                href={EXTENSION_DOWNLOAD_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button
                   size="lg"
                   variant="outline"
                   className="px-8 py-6 text-lg border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
                 >
-                  <Chrome className="w-5 h-5 mr-2" />
+                  <Download className="w-5 h-5 mr-2" />
                   Download Extension
                 </Button>
               </a>
@@ -608,20 +633,26 @@ export default function LandingPage() {
                   your email engagement today.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-6 text-lg shadow-xl shadow-orange-200/50 border-0 rounded-xl"
+                  <a
+                    href={EXTENSION_DOWNLOAD_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Chrome className="w-5 h-5 mr-2" />
-                    Add to Chrome — It&apos;s Free
-                  </Button>
-                  <Link href="/login">
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-6 text-lg shadow-xl shadow-orange-200/50 border-0 rounded-xl"
+                    >
+                      <Download className="w-5 h-5 mr-2" />
+                      Download Extension — It&apos;s Free
+                    </Button>
+                  </a>
+                  <Link href={isLoggedIn ? "/dashboard" : "/login"}>
                     <Button
                       size="lg"
                       variant="outline"
                       className="px-8 py-6 text-lg border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
                     >
-                      View Dashboard
+                      {isLoggedIn ? "Open Dashboard" : "View Dashboard"}
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
@@ -653,8 +684,8 @@ export default function LandingPage() {
                 className="hover:text-orange-600 transition-colors"
               >
                 Features
-              </a>
-              <a
+          </a>
+          <a
                 href="#how-it-works"
                 className="hover:text-orange-600 transition-colors"
               >
@@ -671,12 +702,12 @@ export default function LandingPage() {
               Built by{" "}
               <a
                 href="https://ayushk.blog/"
-                target="_blank"
-                rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
                 className="underline-offset-2 hover:underline hover:text-orange-600"
-              >
+          >
                 Ayush
-              </a>
+          </a>
               .
             </p>
           </div>
