@@ -220,14 +220,14 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
             Welcome back,{" "}
             <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
               {user.name?.split(" ")[0] || "there"}
             </span>
           </h1>
-          <div className="flex items-center gap-3 mt-2">
-            <p className="text-gray-500">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2">
+            <p className="text-sm sm:text-base text-gray-500">
               Here&apos;s an overview of your email tracking activity.
             </p>
             <button
@@ -294,7 +294,7 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-1">
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">
                       {loading ? (
                         <span className="inline-block w-16 h-8 bg-gray-100 rounded animate-pulse" />
                       ) : (
@@ -330,12 +330,12 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                     All emails being tracked by Trackio
                   </CardDescription>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="relative">
+                <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:flex-none">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       placeholder="Search emails..."
-                      className="pl-9 w-64 border-gray-200 focus:border-orange-300 focus:ring-orange-200"
+                      className="pl-9 w-full sm:w-64 border-gray-200 focus:border-orange-300 focus:ring-orange-200"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -344,14 +344,14 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                     variant="outline"
                     size="sm"
                     onClick={fetchEmails}
-                    className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                    className="border-orange-200 text-orange-600 hover:bg-orange-50 flex-shrink-0"
                   >
                     <RefreshCw
-                      className={`w-4 h-4 mr-1 ${
+                      className={`w-4 h-4 sm:mr-1 ${
                         loading ? "animate-spin" : ""
                       }`}
                     />
-                    Refresh
+                    <span className="hidden sm:inline">Refresh</span>
                   </Button>
                 </div>
               </div>
@@ -395,7 +395,7 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                         <TableHead className="text-gray-500 font-medium">
                           Recipient
                         </TableHead>
-                        <TableHead className="text-gray-500 font-medium">
+                        <TableHead className="text-gray-500 font-medium hidden sm:table-cell">
                           Subject
                         </TableHead>
                         <TableHead className="text-gray-500 font-medium text-center">
@@ -404,10 +404,10 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                         <TableHead className="text-gray-500 font-medium text-center">
                           Opens
                         </TableHead>
-                        <TableHead className="text-gray-500 font-medium">
+                        <TableHead className="text-gray-500 font-medium hidden md:table-cell">
                           Last Opened
                         </TableHead>
-                        <TableHead className="text-gray-500 font-medium">
+                        <TableHead className="text-gray-500 font-medium hidden lg:table-cell">
                           Sent
                         </TableHead>
                       </TableRow>
@@ -424,18 +424,23 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                             className="border-gray-50 hover:bg-orange-50/30 transition-colors group"
                           >
                             <TableCell>
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-400 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                              <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-400 flex items-center justify-center text-white text-xs sm:text-sm font-bold flex-shrink-0">
                                   {email.recipient
                                     .charAt(0)
                                     .toUpperCase()}
                                 </div>
-                                <span className="text-sm font-medium text-gray-700 truncate max-w-[200px]">
-                                  {email.recipient}
-                                </span>
+                                <div className="min-w-0">
+                                  <span className="text-xs sm:text-sm font-medium text-gray-700 truncate block max-w-[120px] sm:max-w-[200px]">
+                                    {email.recipient}
+                                  </span>
+                                  <span className="text-[10px] sm:hidden text-gray-400 truncate block max-w-[120px]">
+                                    {email.subject}
+                                  </span>
+                                </div>
                               </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden sm:table-cell">
                               <span className="text-sm text-gray-600 truncate max-w-[250px] block">
                                 {email.subject}
                               </span>
@@ -467,13 +472,13 @@ export function DashboardContent({ user }: { user: DashboardUser }) {
                                 {email.openCount}
                               </span>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden md:table-cell">
                               <div className="flex items-center gap-1.5 text-sm text-gray-500">
                                 <Clock className="w-3.5 h-3.5" />
                                 {formatTimeAgo(email.lastOpened)}
                               </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden lg:table-cell">
                               <span className="text-sm text-gray-400">
                                 {formatTimeAgo(email.createdAt)}
                               </span>

@@ -77,17 +77,17 @@ export default function LandingPage() {
                 Download
               </a>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {isLoggedIn ? (
                 <Link href="/dashboard">
-                  <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0">
+                  <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0 text-xs sm:text-sm px-3 sm:px-4">
                     <LayoutDashboard className="w-4 h-4 mr-1.5" />
                     Dashboard
                   </Button>
                 </Link>
               ) : (
                 <>
-                  <Link href="/login">
+                  <Link href="/login" className="hidden sm:block">
                     <Button
                       variant="ghost"
                       className="text-gray-700 hover:text-orange-600 hover:bg-orange-50"
@@ -96,7 +96,7 @@ export default function LandingPage() {
                     </Button>
                   </Link>
                   <Link href="/login">
-                    <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0">
+                    <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-200 border-0 text-xs sm:text-sm px-3 sm:px-4">
                       Get Started
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Button>
@@ -134,7 +134,7 @@ export default function LandingPage() {
               Free & Open Source
             </motion.div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
               Know When Your
               <br />
               <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
@@ -142,17 +142,17 @@ export default function LandingPage() {
               </span>
             </h1>
 
-            <p className="mt-6 text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed px-2">
               A lightweight Chrome extension that tracks email opens in
               real-time. Get instant analytics on every email you send from
               Gmail.
             </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/login">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+              <Link href="/login" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-6 text-lg shadow-xl shadow-orange-200/50 border-0 rounded-xl"
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg shadow-xl shadow-orange-200/50 border-0 rounded-xl"
                 >
                   Get Started Free
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -162,11 +162,12 @@ export default function LandingPage() {
                 href={EXTENSION_DOWNLOAD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full sm:w-auto"
               >
                 <Button
                   size="lg"
                   variant="outline"
-                  className="px-8 py-6 text-lg border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download Extension
@@ -186,21 +187,21 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-amber-500/20 rounded-2xl blur-2xl" />
               <div className="relative bg-white rounded-2xl shadow-2xl shadow-orange-100/50 border border-orange-100/50 overflow-hidden">
                 {/* Browser bar */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 border-b border-gray-100">
                   <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-400" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-400" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-400" />
                   </div>
                   <div className="flex-1 flex justify-center">
-                    <div className="px-4 py-1 bg-white rounded-lg text-xs text-gray-400 border border-gray-200 min-w-[300px] text-center">
+                    <div className="px-3 sm:px-4 py-1 bg-white rounded-lg text-[10px] sm:text-xs text-gray-400 border border-gray-200 text-center truncate max-w-[200px] sm:max-w-none">
                       trackio.ayushk.blog/dashboard
                     </div>
                   </div>
                 </div>
                 {/* Mock Dashboard */}
-                <div className="p-6">
-                  <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="p-3 sm:p-6">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
                     {[
                       {
                         label: "Total Tracked",
@@ -220,19 +221,19 @@ export default function LandingPage() {
                     ].map((stat, i) => (
                       <div
                         key={i}
-                        className="p-4 rounded-xl bg-gradient-to-br from-orange-50/80 to-amber-50/50 border border-orange-100/50"
+                        className="p-2 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-50/80 to-amber-50/50 border border-orange-100/50"
                       >
-                        <p className="text-xs text-gray-500">{stat.label}</p>
-                        <p className="text-2xl font-bold text-gray-800 mt-1">
+                        <p className="text-[10px] sm:text-xs text-gray-500 leading-tight">{stat.label}</p>
+                        <p className="text-base sm:text-2xl font-bold text-gray-800 mt-0.5 sm:mt-1">
                           {stat.value}
                         </p>
-                        <p className="text-xs text-emerald-600 mt-1">
+                        <p className="text-[10px] sm:text-xs text-emerald-600 mt-0.5 sm:mt-1 leading-tight">
                           {stat.change} this week
                         </p>
                       </div>
                     ))}
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {[
                       {
                         to: "john@company.com",
@@ -255,27 +256,27 @@ export default function LandingPage() {
                     ].map((email, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-orange-200 transition-colors"
+                        className="flex items-center justify-between p-2 sm:p-3 rounded-lg border border-gray-100 hover:border-orange-200 transition-colors gap-2"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-amber-400 flex items-center justify-center text-white text-xs font-bold">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-orange-400 to-amber-400 flex items-center justify-center text-white text-[10px] sm:text-xs font-bold flex-shrink-0">
                             {email.to[0].toUpperCase()}
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-800">
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm font-medium text-gray-800 truncate">
                               {email.subject}
                             </p>
-                            <p className="text-xs text-gray-400">{email.to}</p>
+                            <p className="text-[10px] sm:text-xs text-gray-400 truncate">{email.to}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                           <div className="flex items-center gap-1 text-orange-600">
-                            <Eye className="w-3.5 h-3.5" />
-                            <span className="text-sm font-medium">
+                            <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            <span className="text-xs sm:text-sm font-medium">
                               {email.opens}
                             </span>
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-[10px] sm:text-xs text-gray-400 hidden xs:inline">
                             {email.time}
                           </span>
                         </div>
@@ -290,7 +291,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-gradient-to-b from-white to-orange-50/30">
+      <section id="features" className="py-12 sm:py-24 bg-gradient-to-b from-white to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-16"
@@ -299,13 +300,13 @@ export default function LandingPage() {
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
               Everything You Need to{" "}
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                 Track Smarter
               </span>
             </h2>
-            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+            <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-500 max-w-2xl mx-auto px-2">
               Powerful features designed to give you complete visibility into
               your email engagement.
             </p>
@@ -392,22 +393,22 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 bg-white">
+      <section id="how-it-works" className="py-12 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
               Up & Running in{" "}
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                 3 Simple Steps
               </span>
             </h2>
-            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+            <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-500 max-w-2xl mx-auto px-2">
               Start tracking your emails in under 2 minutes. No complex setup
               required.
             </p>
@@ -448,10 +449,10 @@ export default function LandingPage() {
                   <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-[2px] bg-gradient-to-r from-orange-300 to-transparent" />
                 )}
                 <div className="relative text-center">
-                  <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 mb-6">
-                    <item.icon className="w-10 h-10 text-orange-500" />
+                  <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 mb-4 sm:mb-6">
+                    <item.icon className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
                   </div>
-                  <div className="absolute -top-2 -right-2 md:left-[60%] w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                  <div className="absolute -top-2 left-[55%] sm:left-[55%] md:left-[60%] w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white text-[10px] sm:text-xs font-bold shadow-lg">
                     {item.step}
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -468,10 +469,10 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500">
+      <section className="py-12 sm:py-20 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
@@ -488,10 +489,10 @@ export default function LandingPage() {
                 variants={fadeInUp}
                 className="text-center text-white"
               >
-                <p className="text-4xl sm:text-5xl font-extrabold">
+                <p className="text-2xl sm:text-4xl md:text-5xl font-extrabold">
                   {stat.value}
                 </p>
-                <p className="mt-2 text-orange-100 text-sm">{stat.label}</p>
+                <p className="mt-1 sm:mt-2 text-orange-100 text-xs sm:text-sm">{stat.label}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -499,22 +500,22 @@ export default function LandingPage() {
       </section>
 
       {/* Live Demo Section */}
-      <section className="py-24 bg-gradient-to-b from-orange-50/30 to-white">
+      <section className="py-12 sm:py-24 bg-gradient-to-b from-orange-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
               See It{" "}
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                 In Action
               </span>
             </h2>
-            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+            <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-500 max-w-2xl mx-auto px-2">
               Here&apos;s how Trackio works seamlessly inside your Gmail
               workflow.
             </p>
@@ -550,15 +551,15 @@ export default function LandingPage() {
                   desc: "Checkmark icons appear in Gmail showing which sent emails have been read.",
                 },
               ].map((step, i) => (
-                <div key={i} className="flex gap-4 items-start group">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center group-hover:from-orange-200 group-hover:to-amber-200 transition-colors">
-                    <step.icon className="w-5 h-5 text-orange-600" />
+                <div key={i} className="flex gap-3 sm:gap-4 items-start group">
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center group-hover:from-orange-200 group-hover:to-amber-200 transition-colors">
+                    <step.icon className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900">
+                    <h4 className="text-sm sm:text-base font-semibold text-gray-900">
                       {step.title}
                     </h4>
-                    <p className="text-sm text-gray-500 mt-1">{step.desc}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">{step.desc}</p>
                   </div>
                 </div>
               ))}
@@ -567,41 +568,41 @@ export default function LandingPage() {
               variants={fadeInUp}
               className="relative p-1 rounded-2xl bg-gradient-to-br from-orange-200 to-amber-200"
             >
-              <div className="bg-white rounded-xl p-6 space-y-4">
+              <div className="bg-white rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4">
                 {/* Mock Gmail compose */}
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="font-medium text-gray-800">New Message</span>
+                <div className="flex items-center justify-between border-b border-gray-100 pb-2 sm:pb-3">
+                  <span className="text-sm sm:text-base font-medium text-gray-800">New Message</span>
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-                    <span className="text-xs text-orange-600 font-medium">
+                    <span className="text-[10px] sm:text-xs text-orange-600 font-medium">
                       Trackio Active
                     </span>
                   </div>
                 </div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                   <div className="flex gap-2">
-                    <span className="text-gray-400 w-12">To:</span>
-                    <span className="text-gray-700">client@company.com</span>
+                    <span className="text-gray-400 w-10 sm:w-12 flex-shrink-0">To:</span>
+                    <span className="text-gray-700 truncate">client@company.com</span>
                   </div>
                   <div className="flex gap-2">
-                    <span className="text-gray-400 w-12">Subject:</span>
-                    <span className="text-gray-700">
+                    <span className="text-gray-400 w-10 sm:w-12 flex-shrink-0">Subject:</span>
+                    <span className="text-gray-700 truncate">
                       Project Proposal - Q1 2026
                     </span>
                   </div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4 min-h-[120px] text-sm text-gray-600">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 min-h-[80px] sm:min-h-[120px] text-xs sm:text-sm text-gray-600">
                   Hi there,
                   <br />
                   <br />
                   Please find attached our project proposal for Q1...
-                  <div className="mt-4 inline-flex items-center gap-1 px-2 py-1 rounded bg-orange-50 border border-orange-200 text-xs text-orange-600">
+                  <div className="mt-3 sm:mt-4 inline-flex items-center gap-1 px-2 py-1 rounded bg-orange-50 border border-orange-200 text-[10px] sm:text-xs text-orange-600">
                     <Eye className="w-3 h-3" />
                     Tracking pixel will be injected
                   </div>
                 </div>
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0">
-                  <Send className="w-4 h-4 mr-2" />
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 text-xs sm:text-sm">
+                  <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
                   Send & Track
                 </Button>
               </div>
@@ -611,7 +612,7 @@ export default function LandingPage() {
       </section>
 
       {/* Download CTA */}
-      <section id="download" className="py-24 bg-white">
+      <section id="download" className="py-12 sm:py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial="initial"
@@ -619,45 +620,46 @@ export default function LandingPage() {
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <div className="relative p-12 rounded-3xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border border-orange-100">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/5 to-amber-500/5" />
+            <div className="relative p-6 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border border-orange-100">
+              <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-orange-500/5 to-amber-500/5" />
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-200">
-                  <Chrome className="w-8 h-8 text-white" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg shadow-orange-200">
+                  <Chrome className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
                   Ready to Track Your Emails?
                 </h2>
-                <p className="mt-4 text-lg text-gray-500 max-w-xl mx-auto">
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-500 max-w-xl mx-auto px-2">
                   Install the Chrome extension and start getting insights into
                   your email engagement today.
                 </p>
-                <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                   <a
                     href={EXTENSION_DOWNLOAD_URL}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="w-full sm:w-auto"
                   >
                     <Button
                       size="lg"
-                      className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-6 text-lg shadow-xl shadow-orange-200/50 border-0 rounded-xl"
+                      className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-lg shadow-xl shadow-orange-200/50 border-0 rounded-xl"
                     >
-                      <Download className="w-5 h-5 mr-2" />
+                      <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       Download Extension — It&apos;s Free
                     </Button>
                   </a>
-                  <Link href={isLoggedIn ? "/dashboard" : "/login"}>
+                  <Link href={isLoggedIn ? "/dashboard" : "/login"} className="w-full sm:w-auto">
                     <Button
                       size="lg"
                       variant="outline"
-                      className="px-8 py-6 text-lg border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
+                      className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-lg border-orange-200 text-orange-700 hover:bg-orange-50 rounded-xl"
                     >
                       {isLoggedIn ? "Open Dashboard" : "View Dashboard"}
-                      <ArrowRight className="w-5 h-5 ml-2" />
+                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                     </Button>
                   </Link>
                 </div>
-                <p className="mt-4 text-sm text-gray-400">
+                <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-400">
                   Works with Gmail • Free forever
                 </p>
               </div>
@@ -667,9 +669,9 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-gray-100 bg-gray-50/50">
+      <footer className="py-8 sm:py-12 border-t border-gray-100 bg-gray-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
                 <Mail className="w-3.5 h-3.5 text-white" />
@@ -678,14 +680,14 @@ export default function LandingPage() {
                 Trackio
               </span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-400">
+            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-400">
               <a
                 href="#features"
                 className="hover:text-orange-600 transition-colors"
               >
                 Features
-          </a>
-          <a
+              </a>
+              <a
                 href="#how-it-works"
                 className="hover:text-orange-600 transition-colors"
               >
@@ -698,16 +700,16 @@ export default function LandingPage() {
                 Dashboard
               </Link>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-xs sm:text-sm text-gray-400">
               Built by{" "}
               <a
                 href="https://ayushk.blog/"
-            target="_blank"
-            rel="noopener noreferrer"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="underline-offset-2 hover:underline hover:text-orange-600"
-          >
+              >
                 Ayush
-          </a>
+              </a>
               .
             </p>
           </div>
