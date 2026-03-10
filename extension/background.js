@@ -3,7 +3,7 @@
 // manages extension state, and polls for real-time open notifications.
 
 // Default API base URL (user configures via popup)
-const DEFAULT_API_BASE = "http://localhost:3000";
+const DEFAULT_API_BASE = "https://trackio.ayushk.blog/";
 
 // Notification polling interval (in minutes for chrome.alarms)
 const POLL_ALARM_NAME = "trackio-poll-opens";
