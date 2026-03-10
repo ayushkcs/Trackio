@@ -17,8 +17,6 @@ const SELF_OPEN_BLOCK_RULE_ID = 1;
 
 chrome.runtime.onInstalled.addListener(async () => {
   chrome.storage.sync.get(["trackioApiBase", "trackioEnabled"], (result) => {
-    // Always normalise the stored URL (strips trailing slashes from
-    // previous installs that stored "https://…/")
     const apiBase = (result.trackioApiBase || DEFAULT_API_BASE).replace(/\/+$/, "");
     chrome.storage.sync.set({ trackioApiBase: apiBase });
 

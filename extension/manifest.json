@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Trackio - Email Open Tracker",
   "description": "Track when your Gmail emails are opened with real-time notifications and analytics.",
-  "version": "1.1.0",
+  "version": "0.1.0",
   "permissions": [
     "storage",
     "activeTab",
