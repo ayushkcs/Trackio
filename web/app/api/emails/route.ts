@@ -46,13 +46,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Strip trailing slashes from the app URL to avoid double-slash
+    // tracking URLs like "https://example.com//api/track/..."
+    const appUrl = (
+      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    ).replace(/\/+$/, "");
+
     return withCors(
       NextResponse.json({
         id: email.id,
         senderToken,
-        trackingUrl: `${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-        }/api/track/${email.id}`,
+        trackingUrl: `${appUrl}/api/track/${email.id}`,
       })
     );
   } catch (error) {

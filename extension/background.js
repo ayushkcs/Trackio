@@ -244,8 +244,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.sync.get(
       ["trackioApiBase", "trackioEnabled"],
       (result) => {
+        const raw = result.trackioApiBase || DEFAULT_API_BASE;
         sendResponse({
-          apiBase: result.trackioApiBase || DEFAULT_API_BASE,
+          apiBase: raw.replace(/\/+$/, ""),
           enabled: result.trackioEnabled !== false,
         });
       }
